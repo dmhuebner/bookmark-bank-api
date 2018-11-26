@@ -65,3 +65,6 @@ typings/
 
 # Jetbrains IDEs
 .idea
+
+# Nest.js
+dist

@@ -1,29 +1,37 @@
-import {Controller, Get, Post, Body, Put, Param, Delete, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { BookmarkService } from './bookmark.service';
 
 @Controller('bookmark')
 export class BookmarkController {
+    constructor(private readonly bookmarkService: BookmarkService) {}
+
     @Post()
-    create(@Body() createCatDto) {
-        return 'This action adds a new bookmark';
+    create(@Body() createBookmarkDto) {
+        return this.bookmarkService.create(createBookmarkDto);
     }
 
     @Get()
-    findAll(@Query() query) {
-        return `This action returns all bookmarks (limit: ${query.limit} items)`;
+    findByQuery(@Query() query) {
+        return this.bookmarkService.findByQuery(query);
     }
 
     @Get(':id')
-    findOne(@Param('id') id) {
-        return `This action returns a #${id} bookmark`;
+    async findById(@Param('id') id) {
+        const response = await this.bookmarkService.findById(id);
+        if (!response) {
+            throw new HttpException('Bad Request: invalid id', HttpStatus.BAD_REQUEST);
+        } else {
+            return response;
+        }
     }
 
     @Put(':id')
-    update(@Param('id') id, @Body() updateCatDto) {
-        return `This action updates a #${id} bookmark`;
+    update(@Param('id') id, @Body() updateBookmarkDto) {
+        return this.bookmarkService.update(id, updateBookmarkDto);
     }
 
     @Delete(':id')
     remove(@Param('id') id) {
-        return `This action removes a #${id} bookmark`;
+        return this.bookmarkService.delete(id);
     }
 }
